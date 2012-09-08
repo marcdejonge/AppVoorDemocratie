@@ -163,20 +163,20 @@ var sort = {
 			members = d3.merge(members);
 		}
 	},
-	byName: function(a, b) {
-		return a.Naam > b.Naam ? 1 : a.Naam < b.Naam ? -1 : 0;
+	byPlace: function(a, b) {
+		return parseInt(a["Positie rev1"]) > parseInt(b["Positie rev1"]) ? 1 : parseInt(a["Positie rev1"]) < parseInt(b["Positie rev1"]) ? -1 : 0;
 	},
 	byAge: function (a, b) {
-		return a.Leeftijd > b.Leeftijd ? 1 : a.Leeftijd < b.Leeftijd ? -1 : sort.byName(a, b);
+		return a.Leeftijd > b.Leeftijd ? 1 : a.Leeftijd < b.Leeftijd ? -1 : sort.byPlace(a, b);
 	},
 	byCity: function(a, b) {
-		return a.Woonplaats > b.Woonplaats ? 1 : a.Woonplaats < b.Woonplaats ? -1 : sort.byName(a, b);
+		return a.Woonplaats > b.Woonplaats ? 1 : a.Woonplaats < b.Woonplaats ? -1 : sort.byPlace(a, b);
 	},
 	byExp: function (a, b) {
-		return parseInt(a.Ervaring) > parseInt(b.Ervaring) ? 1 : parseInt(a.Ervaring) < parseInt(b.Ervaring) ? -1 : sort.byName(a, b);
+		return parseInt(a.Ervaring) > parseInt(b.Ervaring) ? 1 : parseInt(a.Ervaring) < parseInt(b.Ervaring) ? -1 : sort.byPlace(a, b);
 	},
 	byParty: function (a, b) {
-		return a.Partij > b.Partij ? 1 : a.Partij < b.Partij ? -1 : sort.byName(a, b);
+		return a.Partij > b.Partij ? 1 : a.Partij < b.Partij ? -1 : sort.byPlace(a, b);
 	},
 	sortParties: function () {
 		this.sort(
