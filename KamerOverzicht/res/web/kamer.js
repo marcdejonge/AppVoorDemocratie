@@ -6,28 +6,32 @@ var kamer = {
 		d3.csv("kamerleden.csv", function(members) {
 			this.members = members;
 		
-			d3.select("#kamer").selectAll("circle")
-				.data(members, function(member) { return member.Naam; })
-				.enter()
-				.append("circle")
-				.on("mouseover", function(member) {
-					d3.select("#memberphoto").attr("src", member.Foto);
-					d3.select("#membername").text(member.Naam);
-					d3.select("#memberfirstname").text(member.Voornaam);
-					d3.select("#memberparty").text(member.Partij);
-					d3.select("#membercity").text(member.Woonplaats);
-					d3.select("#memberage").text(member.Leeftijd);
-					d3.select("#membersex").text(member.Geslacht);
-					d3.select("#memberexp").text(member.Ervaring);
-					d3.select("#memberinfo")
-						.style("display", "block")
-						.style("left", d3.event.clientX + "px")
-						.style("top", d3.event.clientY + "px")
-				})
-				.on("mouseout", function(member) {
-					d3.select("#memberinfo").style("display", "none");
-				})
-				.on("click", kamer.generateTagCloud)
+			var groups = d3.select("#kamer").selectAll("g")
+							.data(members, function(member) { return member.Naam; })
+							.enter()
+							.append("g")
+							.on("mouseover", function(member) {
+								d3.select("#memberphoto").attr("src", member.Foto);
+								d3.select("#membername").text(member.Naam);
+								d3.select("#memberfirstname").text(member.Voornaam);
+								d3.select("#memberparty").text(member.Partij);
+								d3.select("#membercity").text(member.Woonplaats);
+								d3.select("#memberage").text(member.Leeftijd);
+								d3.select("#membersex").text(member.Geslacht);
+								d3.select("#memberexp").text(member.Ervaring);
+								d3.select("#memberinfo")
+									.style("display", "block")
+									.style("left", d3.event.clientX + "px")
+									.style("top", d3.event.clientY + "px")
+							})
+							.on("mouseout", function(member) {
+								d3.select("#memberinfo").style("display", "none");
+							})
+							.on("click", kamer.generateTagCloud)
+			groups.append("circle")
+					.classed("out", true)
+					.attr("fill-opacity", 0.5);
+			groups.append("circle").classed("in", true);
 								
 			color.setColorParty();
 			sort.sortParties();
@@ -37,12 +41,25 @@ var kamer = {
 	},
 	
 	update: function() {
-		var circles = d3.selectAll("circle")
-			.data(members, function(member) { return member.Naam; })
-			.transition()
-			.duration(500)
+		var groups = d3.selectAll("g")
+			.data(members, function(member) { return member.Naam; });
+		
+		groups.select(".out").transition().duration(500)
 			.attr("r", function(member) { 
 				return member.size;
+			})
+			.attr("fill", function(member) {
+				return member.color;
+			})
+			.attr("cx", function(member, ix) { 
+				return sort.positions[ix].x;
+			})
+			.attr("cy", function(member, ix) { 
+				return sort.positions[ix].y; 
+			});
+		groups.select(".in").transition().duration(500)
+			.attr("r", function(member) { 
+				return member.size * member.fill;
 			})
 			.attr("fill", function(member) {
 				return member.color;
@@ -226,6 +243,7 @@ var membersize = {
 		calc = eval("this." + type);
 		for(ix in members) {
 			members[ix].size = calc(members[ix]);
+			members[ix].fill = 1;
 		}
 		kamer.update();
 	},
