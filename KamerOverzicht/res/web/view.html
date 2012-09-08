@@ -15,12 +15,13 @@
     <div class="body">
     	<fieldset id="sort">
     		<legend>Sorteren op</legend>
-    		
-    		<p><input type="radio" name="sort" value="name" onClick="sort(byName); update();" id="defsort">Naam</input></p>
-    		<p><input type="radio" name="sort" value="party" onClick="sortParties(); update();">Partij</input></p>
-    		<p><input type="radio" name="sort" value="city" onClick="sort(byCity); update();">Woonplaats</input></p>
-    		<p><input type="radio" name="sort" value="age" onClick="sort(byAge); update();">Leeftijd</input></p>
-    		<p><input type="radio" name="sort" value="exp" onClick="sort(byExp); update();">Ervaring</input></p>
+    		<p><select id="sortby" onClick="sort.sortBy(this.value)">
+    			<option value="Parties">Partij</option>
+    			<option value="byName">Naam</option>
+    			<option value="byCity">Woonplaats</option>
+    			<option value="byAge">Leeftijd</option>
+    			<option value="byExp">Ervaring</option>
+    		</select></p>
     	</fieldset>    		
     	<fieldset id="color">
     		<legend>Kleuren op</legend>
@@ -48,7 +49,7 @@
     </div>
 	
 	<script>			
-		init();
+		window.kamer.init();
 	</script>
 </body>
 </html>
