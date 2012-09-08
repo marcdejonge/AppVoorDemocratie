@@ -228,3 +228,7 @@ table th, table td {
 #grootte {
 	width: 240px;
 }
+
+select {
+	width: 100%;
+}

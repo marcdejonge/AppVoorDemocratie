@@ -27,7 +27,7 @@ var kamer = {
 				.on("mouseout", function(member) {
 					d3.select("#memberinfo").style("display", "none");
 				})
-				.on("click", this.generateTagCloud)
+				.on("click", kamer.generateTagCloud)
 								
 			color.setColorParty();
 			sort.sortParties();
@@ -59,8 +59,8 @@ var kamer = {
 	generateTagCloud: function(member) {
 		naam = member.Voornaam + " " + member.Naam.split(",")[0];
 	
-	//	d3.text("http://mes-project.tno.nl/services/tagcloud?query=%22" + naam + "%22&time", "text/xml",
-		d3.xml("test.xml", "text/xml",
+		d3.text("http://mes-project.tno.nl/services/tagcloud?query=%22" + naam + "%22&time", "text/xml",
+	//	d3.xml("test.xml", "text/xml",
 			function(data) {
 				words = new Array();
 				tags = data.getElementsByTagName("tag");
