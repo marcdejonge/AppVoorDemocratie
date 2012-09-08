@@ -23,13 +23,37 @@ var kamer = {
 									.style("display", "block")
 									.style("left", d3.event.clientX + "px")
 									.style("top", d3.event.clientY + "px")
+								d3.select("#membermtotal").text(member.TotaalAantalMoties);
+								d3.select("#membermdone").text(member.AangenomenMoties);
+								
+								if(!interactions.selected) {
+									d3.select("#memberteam").text("");
+									d3.select("#memberteamnr").text("");
+								} else {
+									d3.select("#memberteam").text("Ingediende moties met " + selectedmember + ":");
+									nr = interactions.selected[member.Naam];
+									if(!nr) nr = 0;
+									d3.select("#memberteamnr").text(nr);
+								}
 							})
 							.on("mouseout", function(member) {
 								d3.select("#memberinfo").style("display", "none");
 							})
-							.on("click", kamer.generateTagCloud)
+							.on("click", function(member) {
+								for(ix in members) members[ix].selected = false;
+								member.selected = true;
+								selectedmember = member.Naam;
+								
+								interactions.clicked(member);
+								
+								sort.sortBy();
+								membersize.setSize();
+								
+								kamer.generateTagCloud(member);
+							})
 			groups.append("circle")
 					.classed("out", true)
+					.attr("stroke", "#333")
 					.attr("fill-opacity", 0.5);
 			groups.append("circle").classed("in", true);
 								
@@ -52,6 +76,9 @@ var kamer = {
 			})
 			.attr("fill", function(member) {
 				return member.color;
+			})
+			.attr("stroke-width", function(member) {
+				return member.selected ? 5 : 0;
 			})
 			.attr("cx", function(member, ix) { 
 				return sort.positions[ix].x;
@@ -77,9 +104,10 @@ var kamer = {
 	
 	generateTagCloud: function(member) {
 		naam = member.Voornaam + " " + member.Naam.split(",")[0];
-	
+		d3.select("#wordcloud").selectAll("text").remove();
 		d3.xml(member["Positie rev1"] + ".xml", "text/xml",
 			function(data) {
+				if(!data) return;
 				words = new Array();
 				tags = data.getElementsByTagName("tag");
 
@@ -103,18 +131,19 @@ var kamer = {
 	      			.rotate(0)
 	      			.fontSize(function(d) { return d.size; })
 	      			.on("end", function(words) {
-	      				d3.select("#wordcloud").selectAll("text").remove();
 	      				d3.select("#wordcloud")
 							.selectAll("text")
 							.data(words)
 							.enter()
 							.append("text")
-							.style("font-size", function(d) { return d.size + "px"; })
 							.attr("text-anchor", "middle")
 							.attr("transform", function(d) {
 								return "translate(" + [d.x + 400, d.y + 150] + ")rotate(" + d.rotate + ")";
 							})
-							.text(function(d) { return d.text; });
+							.text(function(d) { return d.text; })
+							.transition()
+							.delay(500)
+							.style("font-size", function(d) { return d.size + "px"; });
 	      			})
 	      			.start();
 			});
@@ -156,12 +185,16 @@ var sort = {
 		return { x: -Math.cos(rot) * r + kamer.w / 2, y: Math.sin(rot) * r + 10 }
 	}),
 	sortBy: function(type) {
-				if(type == "Parties") {
-					this.sortParties();
-				} else {
-					this.sort(eval("sort."+type));
-				}
-				kamer.update();
+		if(!type) {
+			type = this.currenttype;
+		}
+		if(type == "Parties") {
+			this.sortParties();
+		} else {
+			this.sort(eval("sort."+type));
+		}
+		this.currenttype = type;
+		kamer.update();
 	},
 	sort: function(sortFunction, keyFunction) {
 		if(!keyFunction) {
@@ -250,12 +283,16 @@ var color = {
 
 var membersize = {
 	setSize: function(type) {
+		if(!type) {
+			type = this.currenttype;
+		}
 		calc = eval("this." + type);
 		for(ix in members) {
 			c = calc(members[ix]);
 			members[ix].size = c[0];
 			members[ix].fill = c[1];
 		}
+		this.currenttype = type;
 		kamer.update();
 	},
 	byExp: function(member) {
@@ -271,14 +308,37 @@ var membersize = {
 			tot = 0;
 			part = 0;
 		}
-		return [Math.min(10, tot / 3.3) + 5, part];
+		return [tot / 15 + 3, part];
+	},
+	byFriends: function(member) {
+		if(member.selected) return [15, 1];
+		nr = interactions.selected[member.Naam];
+		if(!nr) nr = 0;
+		max = interactions.max == 0 ? 1 : interactions.max;
+		return [5 + 10 * (nr / max), 1];
 	}
 };
 
 var interactions = {
 	init: function() {
+		this.interactionMap = new Array();
 		d3.csv("interacties.csv", function(interactions) {
-			this.interactions = interactions;
+			for(ix in interactions) {
+				x = interactions[ix];
+				nr = parseInt(x.AantalInteracties);
+				if(isNaN(nr)) nr = 0;
+				if(!this.interactions.interactionMap[x.Naam1]) this.interactions.interactionMap[x.Naam1] = new Array();
+				this.interactions.interactionMap[x.Naam1][x.Naam2] = nr;
+			}
 		});
+	},
+	clicked: function(member) {
+		this.selected = this.interactionMap[member.Naam];
+		this.max = 0;
+		for(ix in this.selected) {
+			if(this.max < this.selected[ix]) {
+				this.max = this.selected[ix];
+			}
+		}
 	}
-}
+};
