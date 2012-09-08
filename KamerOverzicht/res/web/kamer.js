@@ -31,6 +31,7 @@ var kamer = {
 								
 			color.setColorParty();
 			sort.sortParties();
+			membersize.setSize("byExp");
 			kamer.update();
 		});
 	},
@@ -41,8 +42,8 @@ var kamer = {
 			.transition()
 			.duration(500)
 			.attr("r", function(member) { 
-				return Math.min(10, parseInt(member.Ervaring) / 500) + 5; }
-			)
+				return member.size;
+			})
 			.attr("fill", function(member) {
 				return member.color;
 			})
@@ -129,7 +130,9 @@ var sort = {
 				if(type == "Parties") {
 					this.sortParties();
 				} else {
-					this.sort(eval("this." + type));
+					console.log(type);
+					this.sort(eval("sort."+type));
+					
 				}
 				kamer.update();
 	},
@@ -147,16 +150,16 @@ var sort = {
 		return a.Naam > b.Naam ? 1 : a.Naam < b.Naam ? -1 : 0;
 	},
 	byAge: function (a, b) {
-		return a.Leeftijd > b.Leeftijd ? 1 : a.Leeftijd < b.Leeftijd ? -1 : byName(a, b);
+		return a.Leeftijd > b.Leeftijd ? 1 : a.Leeftijd < b.Leeftijd ? -1 : sort.byName(a, b);
 	},
 	byCity: function(a, b) {
-		return a.Woonplaats > b.Woonplaats ? 1 : a.Woonplaats < b.Woonplaats ? -1 : byName(a, b);
+		return a.Woonplaats > b.Woonplaats ? 1 : a.Woonplaats < b.Woonplaats ? -1 : sort.byName(a, b);
 	},
 	byExp: function (a, b) {
-		return parseInt(a.Ervaring) > parseInt(b.Ervaring) ? 1 : parseInt(a.Ervaring) < parseInt(b.Ervaring) ? -1 : byName(a, b);
+		return parseInt(a.Ervaring) > parseInt(b.Ervaring) ? 1 : parseInt(a.Ervaring) < parseInt(b.Ervaring) ? -1 : sort.byName(a, b);
 	},
 	byParty: function (a, b) {
-		return a.Partij > b.Partij ? 1 : a.Partij < b.Partij ? -1 : byName(a, b);
+		return a.Partij > b.Partij ? 1 : a.Partij < b.Partij ? -1 : sort.byName(a, b);
 	},
 	sortParties: function () {
 		this.sort(
@@ -187,6 +190,14 @@ var color = {
 		"CU": "#0088C2",
 		"PVDD": "#1C99A6"
 	},
+	color: function(type) {
+		if(type == "party") {
+			this.setColorParty();
+		} else if(type == "exp") {
+			this.setColorExp();
+		}
+		kamer.update();
+	},
 	setColor: function(mapFunction, colorFunction) {
 		for(ix in members) {
 			members[ix].color = colorFunction(mapFunction(members[ix]));
@@ -207,5 +218,21 @@ var color = {
 			function(time) {
 				return "rgb(" + Math.max(0, 200 - time/10) + "," + Math.min(200, (time - 1000) / 10) + ",0)"; 
 			});			
+	}
+};
+
+var membersize = {
+	setSize: function(type) {
+		calc = eval("this." + type);
+		for(ix in members) {
+			members[ix].size = calc(members[ix]);
+		}
+		kamer.update();
+	},
+	byExp: function(member) {
+		return Math.min(10, parseInt(member.Ervaring) / 500) + 5; 
+	},
+	byAge: function(member) {
+		return Math.min(15, parseInt(member.Leeftijd) / 5);
 	}
 };

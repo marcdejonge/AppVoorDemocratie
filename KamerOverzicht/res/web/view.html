@@ -17,7 +17,6 @@
     		<legend>Sorteren op</legend>
     		<p><select id="sortby" onClick="sort.sortBy(this.value)">
     			<option value="Parties">Partij</option>
-    			<option value="byName">Naam</option>
     			<option value="byCity">Woonplaats</option>
     			<option value="byAge">Leeftijd</option>
     			<option value="byExp">Ervaring</option>
@@ -25,11 +24,20 @@
     	</fieldset>    		
     	<fieldset id="color">
     		<legend>Kleuren op</legend>
-    		<form>
-    		<p><input type="radio" name="sort" value="party" onClick="setColorParty(); update();" id="defsort">Partij</input></p>
-    		<p><input type="radio" name="sort" value="exp" onClick="setColorExp(); update();">Ervaring</input></p>
-    		</form>
+    		<p><select id="colorby" onClick="color.color(this.value)">
+	    		<option selected="selected" value="party">Partij</option>
+	    		<option value="exp">Evaring</option>
+    		</select></p>
     	</fieldset>    		
+		<fieldset id="grootte">
+    		<legend>Grootte op</legend>
+    		<p><select id="sizeby" onClick="membersize.setSize(this.value)">
+    			<option selected="selected" value="byExp">Ervaring</option>
+    			<option value="byAge">Leeftijd</option>
+    			<option value="byMotie">Moties</option>
+    		</select></p>
+    	</fieldset>    
+    
     
         <fieldset id="memberinfo">
         	<legend id="membername"></legend>
@@ -41,6 +49,7 @@
 			<p><label>Geslacht</label> <span id="membersex"></span></p>
 			<p><label>Ervaring</label> <span id="memberexp"></span></p>
 		</fieldset>
+		
 	
 		<svg id="kamer" width="800" height="400">
 		</svg>
@@ -49,7 +58,7 @@
     </div>
 	
 	<script>			
-		window.kamer.init();
+		kamer.init();
 	</script>
 </body>
 </html>
