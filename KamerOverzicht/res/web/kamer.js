@@ -34,7 +34,7 @@ var kamer = {
 			groups.append("circle").classed("in", true);
 								
 			color.setColorParty();
-			sort.sortParties();
+			sort.sortBy("byPlace");
 			membersize.setSize("byExp");
 			kamer.update();
 		});
