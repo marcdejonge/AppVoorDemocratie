@@ -37,6 +37,8 @@ var kamer = {
 			sort.sortBy("byPlace");
 			membersize.setSize("byExp");
 			kamer.update();
+			
+			interactions.init();
 		});
 	},
 	
@@ -76,14 +78,24 @@ var kamer = {
 	generateTagCloud: function(member) {
 		naam = member.Voornaam + " " + member.Naam.split(",")[0];
 	
-		d3.text("http://mes-project.tno.nl/services/tagcloud?query=%22" + naam + "%22&time", "text/xml",
-	//	d3.xml("test.xml", "text/xml",
+		d3.xml(member["Positie rev1"] + ".xml", "text/xml",
 			function(data) {
 				words = new Array();
 				tags = data.getElementsByTagName("tag");
+
+				totalWeight = 0;				
+				
 				for(ix in tags) {
-					words.push({text: tags[ix].lastChild.data, size: 2 * tags[ix].attributes["weight"].nodeValue});
-					if(words.length > 100) break;
+					weight = tags[ix].attributes["weight"].nodeValue;
+					totalWeight += parseFloat(weight);
+					words.push({text: tags[ix].lastChild.data, size: weight });
+					if(words.length > 50) break;
+				}
+				
+				factor = 1000 / totalWeight;
+				
+				for(ix in words) {
+					words[ix].size = words[ix].size * factor;
 				}
 				
 				d3.layout.cloud().size([600, 300])
@@ -147,9 +159,7 @@ var sort = {
 				if(type == "Parties") {
 					this.sortParties();
 				} else {
-					console.log(type);
 					this.sort(eval("sort."+type));
-					
 				}
 				kamer.update();
 	},
@@ -242,15 +252,33 @@ var membersize = {
 	setSize: function(type) {
 		calc = eval("this." + type);
 		for(ix in members) {
-			members[ix].size = calc(members[ix]);
-			members[ix].fill = 1;
+			c = calc(members[ix]);
+			members[ix].size = c[0];
+			members[ix].fill = c[1];
 		}
 		kamer.update();
 	},
 	byExp: function(member) {
-		return Math.min(10, parseInt(member.Ervaring) / 500) + 5; 
+		return [Math.min(10, parseInt(member.Ervaring) / 500) + 5, 1]; 
 	},
 	byAge: function(member) {
-		return Math.min(15, parseInt(member.Leeftijd) / 5);
+		return [Math.min(15, parseInt(member.Leeftijd) / 5), 1];
+	},
+	byMotie: function(member) {
+		tot = parseInt(member.TotaalAantalMoties);
+		part = parseInt(member.AangenomenMoties) / tot;
+		if(isNaN(tot)) {
+			tot = 0;
+			part = 0;
+		}
+		return [Math.min(10, tot / 3.3) + 5, part];
 	}
 };
+
+var interactions = {
+	init: function() {
+		d3.csv("interacties.csv", function(interactions) {
+			this.interactions = interactions;
+		});
+	}
+}
