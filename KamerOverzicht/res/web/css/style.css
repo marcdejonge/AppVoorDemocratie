@@ -220,11 +220,11 @@ table th, table td {
 	background: white;
 }
 
-#sort {
-	width: 380px;
+#sort, #color {
+	width: 260px;
 	float: left;
 }
 
-#color {
-	width: 380px;
+#grootte {
+	width: 260px;
 }
