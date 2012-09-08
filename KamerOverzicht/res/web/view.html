@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<script src="d3.js"></script>
+	<script src="d3.layout.cloud.js"></script>
+	<script src="kamer.js"></script>
+	<link type="text/css" rel="stylesheet" href="css/style.css" media="screen">
+</head>
+<body>
+	<div class="header">
+        <a class="logo" title="TNO innovation for life" href="index.html"><img src="img/tno.gif" alt="TNO innovation for life" width="224" height="40"></a>
+        <h1><span>T</span>weede <span>K</span>amer <span>A</span>nalyse</h1>
+    </div>
+    
+    <div class="body">
+    	<fieldset id="sort">
+    		<legend>Sorteren op</legend>
+    		
+    		<p><input type="radio" name="sort" value="name" onClick="sort(byName); update();" id="defsort">Naam</input></p>
+    		<p><input type="radio" name="sort" value="party" onClick="sortParties(); update();">Partij</input></p>
+    		<p><input type="radio" name="sort" value="city" onClick="sort(byCity); update();">Woonplaats</input></p>
+    		<p><input type="radio" name="sort" value="age" onClick="sort(byAge); update();">Leeftijd</input></p>
+    		<p><input type="radio" name="sort" value="exp" onClick="sort(byExp); update();">Ervaring</input></p>
+    	</fieldset>    		
+    	<fieldset id="color">
+    		<legend>Kleuren op</legend>
+    		<form>
+    		<p><input type="radio" name="sort" value="party" onClick="setColorParty(); update();" id="defsort">Partij</input></p>
+    		<p><input type="radio" name="sort" value="exp" onClick="setColorExp(); update();">Ervaring</input></p>
+    		</form>
+    	</fieldset>    		
+    
+        <fieldset id="memberinfo">
+        	<legend id="membername"></legend>
+			<img id="memberphoto" src="null" />
+			<p><label>Voornaam</label> <span id="memberfirstname"></span></p>
+			<p><label>Partij</label> <span id="memberparty"></span></p>
+			<p><label>Woonplaats</label> <span id="membercity"></span></p>
+			<p><label>Leeftijd</label> <span id="memberage"></span> jaar</p>
+			<p><label>Geslacht</label> <span id="membersex"></span></p>
+			<p><label>Ervaring</label> <span id="memberexp"></span></p>
+		</fieldset>
+	
+		<svg id="kamer" width="800" height="400">
+		</svg>
+		<svg id="wordcloud" width="800" height="300">
+		</svg>
+    </div>
+	
+	<script>			
+		init();
+	</script>
+</body>
+</html>
