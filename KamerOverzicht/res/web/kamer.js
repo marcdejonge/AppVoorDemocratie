@@ -221,6 +221,13 @@ var sort = {
 	byParty: function (a, b) {
 		return a.Partij > b.Partij ? 1 : a.Partij < b.Partij ? -1 : sort.byPlace(a, b);
 	},
+	byMotie: function (a, b) {
+		x = parseInt(a.TotaalAantalMoties);
+		if(!x) x = 0;
+		y = parseInt(b.TotaalAantalMoties);
+		if(!y) y = 0;
+		return x > y ? 1 : x < y ? -1 : sort.byPlace(a, b);
+	},
 	sortParties: function () {
 		this.sort(
 			function(a, b) {
